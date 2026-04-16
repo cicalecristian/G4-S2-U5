@@ -1,7 +1,7 @@
 package cristiancicale.G4S2U5.exceptions;
 
-
-import cristiancicale.G4S2U5.payloads.ErrorsPayload;
+import cristiancicale.G4S2U5.payloads.ErrorsDTO;
+import cristiancicale.G4S2U5.payloads.ErrorsWithListDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -14,21 +14,27 @@ public class ErrorsHandler {
 
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorsPayload handleBadRequest(BadRequestException ex) {
-        return new ErrorsPayload(ex.getMessage(), LocalDateTime.now());
+    public ErrorsDTO handleBadRequest(BadRequestException ex) {
+        return new ErrorsDTO(ex.getMessage(), LocalDateTime.now());
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST) // 400
+    public ErrorsWithListDTO handleValidationErrors(ValidationException ex) {
+        return new ErrorsWithListDTO(ex.getMessage(), LocalDateTime.now(), ex.getErrors());
     }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorsPayload handleBadRequest(NotFoundException ex) {
-        return new ErrorsPayload(ex.getMessage(), LocalDateTime.now());
+    public ErrorsDTO handleBadRequest(NotFoundException ex) {
+        return new ErrorsDTO(ex.getMessage(), LocalDateTime.now());
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorsPayload handleGenericEx(Exception ex) {
+    public ErrorsDTO handleGenericEx(Exception ex) {
         ex.printStackTrace();
 
-        return new ErrorsPayload("errore lato server", LocalDateTime.now());
+        return new ErrorsDTO("errore lato server", LocalDateTime.now());
     }
 }
